@@ -8,24 +8,39 @@
 
         <h4 class="text-center mb-4">Login</h4>
 
-        <form method="POST" action="{{ route('login') }}">
+        <form method="POST" action="{{ route('login.store') }}" novalidate>
             @csrf
             <!-- Email -->
             <div class="mb-3">
                 <label class="form-label">Email</label>
-                <input type="email" class="form-control" placeholder="Enter email" required>
+                <input type="email" name="email"
+                    class="form-control @error('email') is-invalid @enderror"
+                    placeholder="Enter email"
+                    value="{{ old('email') }}" required>
+                @error('email')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
 
             <!-- Password -->
             <div class="mb-3">
                 <label class="form-label">Password</label>
-                <input type="password" class="form-control" placeholder="Enter password" required>
+                <input type="password" name="password"
+                    class="form-control @error('password') is-invalid @enderror"
+                    placeholder="Enter password" required>
+                @error('password')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
 
             <!-- Login + Registered Link -->
             <div class="d-flex justify-content-between align-items-center mt-3">
                 <a href="{{ route('register') }}" class="text-decoration-none">Don't have an account?</a>
-                <button class="btn btn-primary px-4">Login</button>
+                <button type="submit" class="btn btn-primary px-4">Login</button>
             </div>
         </form>
     </div>

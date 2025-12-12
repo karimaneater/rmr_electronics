@@ -4,9 +4,19 @@ namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Services\Auth\LoginService;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
+
+    protected $redirectTo = '/dashboard';
+    protected $loginService;
+
+    public function __construct(LoginService $loginService)
+    {
+        $this->loginService = $loginService;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -20,6 +30,10 @@ class LoginController extends Controller
      */
     public function create()
     {
+        if (auth()->check()) {
+            return redirect('/dashboard');
+        }
+
         return view('authPages.loginPage');
     }
 
@@ -28,38 +42,35 @@ class LoginController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+        ]);
+
+        $user = $this->loginService->login($validated);
+
+
+        if ($user) {
+            // Log the user in using Laravel Auth
+            auth()->login($user);
+
+            return redirect()->intended('/dashboard');
+        }
+
+        return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function logout(Request $request)
     {
-        //
-    }
+        Auth::logout(); // Logs out the user
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+        // Invalidate the session (optional but recommended)
+        $request->session()->invalidate();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        // Regenerate CSRF token
+        $request->session()->regenerateToken();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        // Redirect to login page
+        return redirect()->route('login')->with('success', 'You have been logged out.');
     }
 }

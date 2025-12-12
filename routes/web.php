@@ -16,10 +16,26 @@ use App\Http\Controllers\Auth\RegisterController;
 */
 
 
-// Login Routes
-Route::get('/login', [LoginController::class, 'create'])->name('login');
+
+Route::middleware(['guest'])->group(function () {
+    // Login Routes
+    Route::get('/login', [LoginController::class, 'create'])->name('login');
+    Route::post('/login', [LoginController::class, 'store'])->name('login.store');
+
+    // Register Routes
+    Route::get('/register', [RegisterController::class, 'create'])->name('register');
+    Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+});
 
 
-// Register Routes
-Route::get('/register', [RegisterController::class, 'create'])->name('register');
-Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+
+Route::middleware(['auth', 'prevent.back.history'])->group(function () {
+    // Dashboard Route (protected)
+    Route::get('/dashboard', function () {
+        return view('appPages.dashboardPage');
+    })->name('dashboard');
+
+    // Logout Route
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+});
+
