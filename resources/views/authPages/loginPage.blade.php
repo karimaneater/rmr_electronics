@@ -1,9 +1,14 @@
+@extends('layouts.authLayout')
+
+@section('title', 'Login')
+
+@section('content')
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="card p-4 shadow-sm" style="width: 100%; max-width: 360px;">
 
         <h4 class="text-center mb-4">Login</h4>
 
-        <form method="POST" action="">
+        <form method="POST" action="{{ route('login') }}">
             @csrf
             <!-- Email -->
             <div class="mb-3">
@@ -19,10 +24,10 @@
 
             <!-- Login + Registered Link -->
             <div class="d-flex justify-content-between align-items-center mt-3">
-                <a href="#" class="text-decoration-none">Don't have an account?</a>
+                <a href="{{ route('register') }}" class="text-decoration-none">Don't have an account?</a>
                 <button class="btn btn-primary px-4">Login</button>
             </div>
         </form>
     </div>
 </div>
-
+@endsection
